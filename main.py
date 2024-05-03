@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
-from tools.tts import tts
 from tools.whisper import stt
+from tools.gpt import process_with_gpt_and_stream_audio
 import io
 
 app = FastAPI()
@@ -17,7 +17,8 @@ async def receive_audio(audio: UploadFile = File(...)):
         user_query = await stt(audio_data=audio_data)
         audio_data.close()
 
-        return StreamingResponse(tts(input_text=user_query), media_type="audio/opus")
+        return StreamingResponse(process_with_gpt_and_stream_audio(input=user_query), media_type='audio/opus')
+    
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
