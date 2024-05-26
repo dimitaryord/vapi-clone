@@ -5,23 +5,11 @@ from tools.gpt import process_with_gpt
 from environ import env_collection
 from tools.whisper import stt
 from tools.tts import tts
-import socket
-from contextlib import asynccontextmanager
 import io
 
 app = FastAPI()
 session_handler = SessionManager()
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    try:
-        config = app.extra["uvicorn_config"]
-        for server in config.servers:
-            server.sockets[0].setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-    except Exception as e:
-        print(f"Error setting TCP_NODELAY: {e}")
-    yield
 
 @app.middleware("http")
 async def auth_key_middleware(request: Request, call_next):
