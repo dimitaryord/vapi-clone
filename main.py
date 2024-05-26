@@ -71,7 +71,7 @@ async def process_query_to_audio(query):
     async for sentence in process_with_gpt(input=query):
         async for audio_chunk in tts(input_text=sentence):
             yield audio_chunk
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1)
 
 
 @app.get("/voice/assistant/session/v0.1")
