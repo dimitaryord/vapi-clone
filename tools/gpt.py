@@ -2,27 +2,29 @@ from instances.openai import client
 from environ import env_collection
 import re
 
-thread_id = ''
-
 def is_complete_sentence(string):
     return re.search(r'[.?!](?=\s|$)', string) is not None
 
+thread_id=''
+
 async def process_with_gpt(input):
+    global thread_id
     if len(thread_id) == 0:
         thread = await client.beta.threads.create()
         await client.beta.threads.messages.create(
             thread_id=thread.id, content=input, role="user"
         )
+        thread_id = thread.id
     else:
         await client.beta.threads.messages.create(
             thread_id=thread_id, content=input, role="user"
         )
 
-
     buffer = ''
+
     try:
         async with client.beta.threads.runs.stream(
-            thread_id=thread.id,
+            thread_id=thread_id,
             assistant_id=env_collection["ASSISTANT_ID"],
         ) as stream:
             async for event in stream:
