@@ -1,13 +1,26 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request, Header
 from fastapi.responses import JSONResponse, StreamingResponse
+from session.manager import SessionManager
 from tools.gpt import process_with_gpt
+from environ import env_collection
 from tools.whisper import stt
 from tools.tts import tts
-from session.manager import SessionManager
 import io
 
 app = FastAPI()
 session_handler = SessionManager()
+
+@app.middleware("http")
+async def auth_key_middleware(request: Request, call_next):
+    auth_key = request.headers.get("Authorization-Key")
+    if not auth_key or auth_key != env_collection["AUTH_KEY"]:
+        return HTTPException(
+            status_code=401,
+            detail="Not authorized"
+        ) 
+    
+    response = await call_next(request)
+    return response
 
 @app.get("/audio/session/create")
 async def create_audio_session():
