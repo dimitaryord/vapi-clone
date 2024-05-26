@@ -5,6 +5,7 @@ from tools.gpt import process_with_gpt
 from environ import env_collection
 from tools.whisper import stt
 from tools.tts import tts
+import asyncio
 import io
 
 app = FastAPI()
@@ -70,6 +71,7 @@ async def process_query_to_audio(query):
     async for sentence in process_with_gpt(input=query):
         async for audio_chunk in tts(input_text=sentence):
             yield audio_chunk
+            await asyncio.sleep(0.1)
 
 
 @app.get("/voice/assistant/session/v0.1")
