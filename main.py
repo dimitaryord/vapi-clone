@@ -10,17 +10,16 @@ import io
 app = FastAPI()
 session_handler = SessionManager()
 
+
 @app.middleware("http")
 async def auth_key_middleware(request: Request, call_next):
     auth_key = request.headers.get("Authorization-Key")
     if not auth_key or auth_key != env_collection["AUTH_KEY"]:
-        return HTTPException(
-            status_code=401,
-            detail="Not authorized"
-        ) 
-    
+        raise HTTPException(status_code=401, detail="Not authorized")
+
     response = await call_next(request)
     return response
+
 
 @app.get("/audio/session/create")
 async def create_audio_session():
@@ -54,7 +53,7 @@ async def add_audio_to_session(
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 
 @app.post("/audio/session/delete")
 async def delete_audio_session(session_id: str = Header(None)):
