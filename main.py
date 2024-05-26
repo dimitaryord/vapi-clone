@@ -99,7 +99,7 @@ async def run_model_with_file(audio: UploadFile = File(...)):
         audio_data.close()
 
         return StreamingResponse(
-            process_query_to_audio(query=user_query), media_type="audio/opus"
+            process_query_to_audio(query=user_query), media_type="audio/mp3"
         )
     except Exception as e:
         print(e)

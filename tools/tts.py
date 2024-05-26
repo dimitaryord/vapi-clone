@@ -5,7 +5,7 @@ async def tts(input_text: str, model="tts-1", voice="nova"):
     try:
         is_new_sentence = b'\x01'
         async with client.audio.speech.with_streaming_response.create(
-            model=model, voice=voice, input=input_text, response_format="opus",
+            model=model, voice=voice, input=input_text, response_format="mp3",
         ) as response:
             if response.status_code == 200:
                     async for chunk in response.iter_bytes(chunk_size=4096):
