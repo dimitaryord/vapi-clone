@@ -1,14 +1,14 @@
 import aioredis
-import os
+from environ import env_collection
 
 redis = None
 
 async def get_redis():
     global redis
     if redis is None:
-        redis_url = os.environ.get('REDIS_TLS_URL')
+        redis_url = env_collection['REDIS_URL']
         print(redis_url)
-        redis = await aioredis.from_url(redis_url)
+        redis = await aioredis.from_url(redis_url,)
     return redis
 
 async def close_redis():
