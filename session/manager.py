@@ -26,7 +26,8 @@ class SessionManager:
         
     def clear(self, session_id: str):
         if session_id in self.__sessions:
-            self.__sessions[session_id] = ""
+            self.__sessions[session_id] = ''
+            print(self.__sessions)
         else:
             raise ValueError("Session ID not found")
         
