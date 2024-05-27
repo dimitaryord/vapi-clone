@@ -76,7 +76,10 @@ async def process_query_to_audio(query):
 async def run_model_with_session(session_id: str = Header(None)):
     try:
         user_query = session_handler.get(session_id)
+        print(user_query)
         session_handler.clear(session_id)
+        print(user_query)
+
         return StreamingResponse(
             process_query_to_audio(query=user_query), media_type="audio/opus"
         )
