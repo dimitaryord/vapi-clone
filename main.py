@@ -38,7 +38,8 @@ async def create_audio_session():
 
 @app.post("/audio/session/add")
 async def add_audio_to_session(
-    audio_data: UploadFile = File(...), session_id: str = Header(None)
+    audio_data: UploadFile = File(...),
+    session_id: str = Header(..., alias="Session-Id"),
 ):
     try:
         audio_bytes = await audio_data.read()
@@ -56,7 +57,7 @@ async def add_audio_to_session(
 
 
 @app.post("/audio/session/delete")
-async def delete_audio_session(session_id: str = Header(None)):
+async def delete_audio_session(session_id: str = Header(..., alias="Session-Id")):
     try:
         session_handler.delete(session_id)
         return JSONResponse(
@@ -73,7 +74,7 @@ async def process_query_to_audio(query):
 
 
 @app.get("/voice/assistant/session/v0.1")
-async def run_model_with_session(session_id: str = Header(None)):
+async def run_model_with_session(session_id: str = Header(..., alias="Session-Id")):
     try:
         user_query = session_handler.get(session_id)
         print(user_query)
