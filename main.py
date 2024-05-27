@@ -21,9 +21,9 @@ app = FastAPI()
 
 @asynccontextmanager
 async def lifespan():
-    await get_redis()
+    get_redis()
     yield
-    await close_redis()
+    close_redis()
 
 @app.middleware("http")
 async def auth_key_middleware(request: Request, call_next):

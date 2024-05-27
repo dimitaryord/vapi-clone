@@ -1,50 +1,55 @@
-import aioredis
+import redis
 from environ import env_collection
 
-redis = None
+redisCli = None
+
 
 async def get_redis():
-    global redis
-    if redis is None:
-        redis_url = env_collection['REDIS_URL']
-        print(redis_url)
-        redis = await aioredis.from_url(redis_url,)
-    return redis
+    global redisCli
+    if redisCli is None:
+        redis_url = env_collection["REDIS_URL"]
+        redisCli = await redis.from_url(redis_url)
+    return redisCli
 
-async def close_redis():
-    global redis
-    if redis is not None:
-        await redis.close()
-        await redis.connection_pool.disconnect()
-        redis = None
 
-async def create(key: str, value: str):
-    redis = await get_redis()
-    await redis.set(key, value)
+def close_redis():
+    global redisCli
+    if redisCli is not None:
+        redisCli.close()
+        redisCli = None
 
-async def update(key: str, value: str):
-    redis = await get_redis()
-    if not await redis.exists(key):
+
+def create(key: str, value: str):
+    redisCli = get_redis()
+    redisCli.set(key, value)
+
+
+def update(key: str, value: str):
+    redisCli = get_redis()
+    if not redisCli.exists(key):
         raise ValueError("Key does not exist")
-    current_value = await redis.get(key, encoding='utf-8')
+    current_value = redisCli.get(key, encoding="utf-8")
     new_value = current_value + value
-    await redis.set(key, new_value)
+    redisCli.set(key, new_value)
 
-async def get(key: str):
-    redis = await get_redis()
-    value = await redis.get(key, encoding='utf-8')
+
+def get(key: str):
+    redisCli = get_redis()
+    value = redisCli.get(key, encoding="utf-8")
     if value is None:
         raise ValueError("Key does not exist")
     return value
 
-async def clear(key: str):
-    redis = await get_redis()
-    if not await redis.exists(key):
-        raise ValueError("Key does not exist")
-    await redis.set(key, '')
 
-async def delete(key: str):
-    redis = await get_redis()
-    if not await redis.exists(key):
+def clear(key: str):
+    redisCli = get_redis()
+    if not redisCli.exists(key):
         raise ValueError("Key does not exist")
-    await redis.delete(key)
+    redisCli.set(key, "")
+
+
+def delete(key: str):
+    redisCli = get_redis()
+    if not redisCli.exists(key):
+        raise ValueError("Key does not exist")
+    redisCli.delete(key)
