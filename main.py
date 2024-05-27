@@ -25,6 +25,7 @@ async def auth_key_middleware(request: Request, call_next):
 async def create_audio_session():
     try:
         session_id = session_handler.create()
+        print(session_id)
         return JSONResponse(
             content={
                 "message": "Session created successfully",
@@ -41,6 +42,7 @@ async def add_audio_to_session(
     audio_data: UploadFile = File(...),
     session_id: str = Header(..., alias="Session-Id"),
 ):
+    print(session_id)
     try:
         audio_bytes = await audio_data.read()
         audio_buffer = io.BytesIO(audio_bytes)
@@ -76,6 +78,7 @@ async def process_query_to_audio(query):
 @app.get("/voice/assistant/session/v0.1")
 async def run_model_with_session(session_id: str = Header(..., alias="Session-Id")):
     try:
+        print(session_id)
         user_query = session_handler.get(session_id)
         print(user_query)
         session_handler.clear(session_id)
