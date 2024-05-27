@@ -7,6 +7,7 @@ async def get_redis():
     global redis
     if redis is None:
         redis_url = os.getenv('REDIS_URL')
+        print(redis_url)
         redis = await aioredis.from_url(redis_url)
     return redis
 
