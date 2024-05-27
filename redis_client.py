@@ -7,14 +7,14 @@ async def get_redis():
     global redis
     if redis is None:
         redis_url = os.getenv('REDIS_URL')
-        redis = await aioredis.create_redis_pool(redis_url)
+        redis = await aioredis.from_url(redis_url)
     return redis
 
 async def close_redis():
     global redis
     if redis is not None:
-        redis.close()
-        await redis.wait_closed()
+        await redis.close()
+        await redis.connection_pool.disconnect()
         redis = None
 
 async def create(key: str, value: str):
