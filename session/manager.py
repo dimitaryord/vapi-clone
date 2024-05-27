@@ -11,12 +11,14 @@ class SessionManager:
         return session_id
     
     def write(self, session_id: str, transcription: str):
+        print(self.__sessions)
         if session_id in self.__sessions:
             self.__sessions[session_id] += transcription
         else:
             raise ValueError("Session ID not found")
         
     def get(self, session_id: str):
+        print(self.__sessions)
         if session_id in self.__sessions:
             return self.__sessions[session_id]
         else:
