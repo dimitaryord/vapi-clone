@@ -39,7 +39,7 @@ async def auth_key_middleware(request: Request, call_next):
 async def create_audio_session():
     try:
         session_id = str(uuid.uuid4())
-        await create(session_id, '')
+        create(session_id, '')
         return JSONResponse(
             content={
                 "message": "Session created successfully",
@@ -62,7 +62,7 @@ async def add_audio_to_session(
         user_query = await stt(audio_data=audio_buffer)
         print(f"Current Text: {user_query}")
 
-        await update(session_id, user_query)
+        update(session_id, user_query)
 
         return JSONResponse(
             content={"message": "Audio chunk added to session"}, status_code=200
@@ -74,7 +74,7 @@ async def add_audio_to_session(
 @app.post("/audio/session/delete")
 async def delete_audio_session(session_id: str = Header(..., alias="Session-Id")):
     try:
-        await delete(session_id)
+        delete(session_id)
         return JSONResponse(
             content={"message": "Session deleted successfully"}, status_code=200
         )
@@ -91,8 +91,8 @@ async def process_query_to_audio(query):
 @app.get("/voice/assistant/session/v0.1")
 async def run_model_with_session(session_id: str = Header(..., alias="Session-Id")):
     try:
-        user_query = await get(session_id)
-        await clear(session_id)
+        user_query = get(session_id)
+        clear(session_id)
 
         return StreamingResponse(
             process_query_to_audio(query=user_query), media_type="audio/opus"
